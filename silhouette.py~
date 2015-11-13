@@ -1,0 +1,22 @@
+import scipy.spatial
+
+def calculate_silhouette_coefficient(M, gene_map):
+	silhoutte_index = 0;
+	for i in range(M.shape[0]):
+		cluster_id = M[i][-1]
+		print "Cluster id: ", cluster_id
+		a = 0
+		for j in range(len(gene_map[cluster_id])):
+			a = a + scipy.spatial.distance.euclidean(M[i][1:-1], M[gene_map[cluster_id][j] - 1][1:-1])
+		a = a / len(gene_map[cluster_id])
+
+		b = 999999999
+		for key in gene_map:
+			if cluster_id != key:
+				x = 0
+				for value in gene_map[key]:
+					x = x + scipy.spatial.distance.euclidean(M[i][1:-1], M[value - 1][1:-1])
+				b = min(b, x / len(gene_map[key]))
+		silhoutte_index = silhoutte_index + (b - a) / max(a, b)
+
+	return "Silhouette: ", silhoutte_index / M.shape[0]
